@@ -1,0 +1,386 @@
+// Variables
+$legacy-ie: false !default;
+
+// To select Normalize or Reset, see _manifest.scss
+$normalize: false !default;
+$reset: false !default;
+
+// Include responsive grid widths w/breakpoint namespace?
+$responsive: true;
+
+// Breakpoints
+$media-breakpoints: (
+  hand: 380px,
+  lap: 609px,
+  tablet: 768px,
+  desk: 1152px,
+  wall: 1200px
+);
+
+$legacy-media-breakpoint: desk;
+
+// Media query expressions
+$media-features: (
+  portrait: "(orientation: portrait)",
+  landscape: "(orientation: landscape)",
+  at2x: "(-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi)",
+  at3x: "(-webkit-min-device-pixel-ratio: 3), (min-resolution: 350dpi)"
+);
+//------------------------------------//
+//  $FUNCTIONS
+//------------------------------------//
+
+// map
+//   Applies the function to each argument in the given list.
+@function map($func, $list, $args...) {
+  $new-list: ();
+  @each $item in $list {
+    $new-list: append($new-list, call($func, $item, $args...));
+  }
+  @return $new-list;
+}
+
+// multiply
+//   Multiplies a and b, if a is a number.
+@function multiply($a, $b) {
+  @if type-of($a) == 'number' {
+    @return $a * $b;
+  } @else {
+    @return $a;
+  }
+}
+
+// px2em
+//   Convert pixels to ems
+@function px2em($px) {
+  @if unitless($px) {
+    @warn "Assuming #{$px} to be in pixels, attempting to convert it into pixels.";
+    @return px2em($px * 1px);
+  } @else if unit($px) == em {
+    @return $px;
+  }
+  @return ($px / 16px) * 1em;
+}
+
+// get-breakpoint-width
+//   Get a breakpoint's width from the map.
+@function get-breakpoint-width($name, $breakpoints: $media-breakpoints) {
+  @if map-has-key($breakpoints, $name) {
+    @return map-get($breakpoints, $name);
+  } @else {
+    @error "Breakpoint #{$name} wasn't found in $media-breakpoints.";
+  }
+}
+
+// get-feature
+//   Get a media feature's definition from the map.
+@function get-feature($name, $features: $media-features) {
+  @if map-has-key($features, $name) {
+    @return map-get($features, $name);
+  } @else {
+    @return false;
+  }
+}
+
+// ***************************************************************************
+// Media query mixin
+//
+// When using spaceBase, styles should be written mobile-first.
+// The media mixin can override these base styles in a variety of ways:
+//   - starting at a breakpoint ($from: x)
+//   - up to a breakpoint ($upto: y)
+//   - between two breakpoints ($from: x, $upto: y)
+//   - for specific media features (e.g. retina, orientation)
+//   - for different media types ($type: print)
+//
+// You can use breakpoint aliases set in $media-breakpoints (in _vars.scss)
+// or custom widths. Pixel values will be converted to ems.
+//
+// Commonly-used media features are defined in $media-features (in _vars.scss).
+// You can define additional feature aliases or use custom one-off expressions.
+//
+// It's important to note that $upto is exclusive.
+// This means that `@include media($upto: 768px)` will set a max-width of
+// 47.99em (roughly 767px).
+//
+// USAGE:
+//
+// @include media($from: hand) { ... }
+// @include media($upto: desk) { ... }
+// @include media($from: lap, $upto: desk) { ... }
+// @include media($from: 800px, $upto: 900px) { ... }
+// @include media(landscape, $upto: desk) { ... }
+// @include media($type: print) { ... }
+// @include media('(device-radius: 50%)') { ... }
+//
+// OUTPUT:
+//
+// @media screen and (min-width: 30em) { ... }
+// @media screen and (max-width: 63.99em) { ... }
+// @media screen and (min-width: 48em) and (max-width: 63.99em) { ... }
+// @media screen and (min-width: 50em) and (max-width: 56.25em) { ... }
+// @media screen and (max-width: 63.99em) and (orientation: landscape) { ... }
+// @media print { ... }
+// @media screen and (device-radius: 50%) { ... }
+//
+// OUTPUT TO LEGACY CSS:
+//
+// Only the content needed to render the $legacy-media-breakpoint layout. Any
+// includes with features or types other than screen will be excluded.
+//
+// ***************************************************************************
+
+@mixin media($feature:false, $from:false, $upto:false, $type:screen) {
+  $min-width: 0;
+  $max-width: 0;
+  $media-query: "";
+
+  // From: this breakpoint (inclusive)
+  @if $from {
+    @if type-of($from) == number {
+      $min-width: px2em($from);
+    } @else if get-breakpoint-width($from) {
+      $min-width: px2em(get-breakpoint-width($from));
+    }
+  }
+
+  // Upto: that breakpoint (exclusive)
+  @if $upto {
+    @if type-of($upto) == number {
+      $max-width: px2em($upto);
+    } @else if get-breakpoint-width($upto) {
+      $max-width: px2em(get-breakpoint-width($upto)) - 0.01em;
+    }
+  }
+
+  // Render styles without media queries
+  @if $legacy-ie == true {
+    $legacy-breakpoint-width: px2em(
+      get-breakpoint-width($legacy-media-breakpoint)
+    );
+    // Output only rules that start at or span our legacy media width
+    @if ($feature == false
+ and $type == "screen"
+ and $min-width <= $legacy-breakpoint-width
+ and (
+ $upto == false or $max-width >= $legacy-breakpoint-width
+ )) {
+      @content;
+    }
+  } @else {
+    @if $min-width != 0 {
+      $media-query: "#{$media-query} and (min-width: #{$min-width})";
+    }
+    @if $max-width != 0 {
+      $media-query: "#{$media-query} and (max-width: #{$max-width})";
+    }
+    @if $feature {
+      // Pass through custom expression or get defined expression
+      $original-feature: $feature;
+      $feature: get-feature($feature);
+      @if $feature {
+        $media-query: "#{$media-query} and #{$feature}";
+      } @else {
+        $media-query: "#{$media-query} and (#{$original-feature})";
+      }
+    }
+
+    // Remove unnecessary media query prefix 'all and '
+    @if ($type == "all" and $media-query != "") {
+      $type: "";
+      $media-query: str-slice(unquote($media-query), 6);
+    }
+
+    @media #{$type + $media-query} {
+      @content;
+    }
+  }
+}
+
+//------------------------------------//
+//  $GRIDS
+//------------------------------------//
+$gutter: 1.5rem;
+
+// Grid wrapper
+.gw,
+.grid-wrapper {
+  list-style: none;
+  margin-bottom: 0;
+  margin-left: -$gutter;
+
+  clear: both;
+}
+
+@supports (display: grid) {
+  .gw,
+  .grid-wrapper {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-flow: dense;
+
+    @include media($from: tablet) {
+      grid-gap: 2 * $gutter;
+    }
+    margin-left: 0;
+  }
+}
+
+// Reverse grid
+.gw--rev > .g,
+.grid-wrapper--rev > .grid {
+  float: right;
+}
+
+// Gutterless grid
+.gw--full,
+.grid-wrapper--full {
+  margin-left: 0;
+  grid-gap: 0;
+
+  > .g,
+  > .grid {
+    padding-left: 0;
+  }
+}
+
+// Very infrequently occuring grid wrappers as children of grid wrappers
+.gw > .gw,
+.grid-wrapper > .grid-wrapper {
+  margin-left: 0;
+}
+
+// Grid
+.g,
+.grid {
+  float: left;
+  width: 100%;
+  padding-left: $gutter;
+  transition: width 0.15s ease;
+}
+
+@supports (display: grid) {
+  .g,
+  .grid {
+    padding-left: 0;
+  }
+}
+
+//------------------------------------//
+//  $WIDTHS
+//------------------------------------//
+
+$grid-support: false;
+
+@supports (display: grid) {
+  $grid-support: true !global;
+}
+
+$grid-widths: (
+  1: one-whole,
+  1/2: one-half two-quarters three-sixths four-eighths five-tenths six-twelfths,
+  1/3: one-third two-sixths four-twelfths,
+  2/3: two-thirds four-sixths eight-twelfths,
+  1/4: one-quarter two-eighths three-twelfths,
+  3/4: three-quarters six-eighths nine-twelfths,
+  1/5: one-fifth two-tenths,
+  2/5: two-fifths four-tenths,
+  3/5: three-fifths six-tenths,
+  4/5: four-fifths eight-tenths,
+  1/6: one-sixth two-twelfths,
+  5/6: five-sixths ten-twelfths,
+  1/8: one-eighth,
+  3/8: three-eighths,
+  5/8: five-eighths,
+  7/8: seven-eighths,
+  1/10: one-tenth,
+  3/10: three-tenths,
+  7/10: seven-tenths,
+  9/10: nine-tenths,
+  1/12: one-twelfth,
+  5/12: five-twelfths,
+  7/12: seven-twelfths,
+  11/12: eleven-twelfths
+);
+
+@mixin grid-setup-ie($namespace: "", $property: width) {
+  @each $fraction, $widths in $grid-widths {
+    $selectors: null;
+    $percent: $fraction * 100%;
+    @each $width in $widths {
+      $selectors: append(
+        $selectors,
+        unquote(".#{$namespace}#{$width}"),
+        "comma"
+      );
+    }
+    #{$selectors} {
+      #{$property}: $percent;
+    }
+  }
+}
+
+@mixin grid-setup($namespace: "", $property: grid-column, $span: span) {
+  @each $fraction, $widths in $grid-widths {
+    $selectors: null;
+    $columns: $fraction * 12;
+    @each $width in $widths {
+      $selectors: append(
+        $selectors,
+        unquote(".#{$namespace}#{$width}"),
+        "comma"
+      );
+    }
+    #{$selectors} {
+      #{$property}: $span $columns;
+    }
+  }
+}
+
+//
+// Responsive widths w/breakpoint namespace
+//
+// If you have set `$responsive` to ‘true’ in `_vars.scss` then you can define at
+// which breakpoint you’d like an element to be a certain size, e.g.:
+//
+// <div class="g one-quarter lap-one-half palm-one-whole"> ... </div>
+//
+// This would create a `div` that, at ‘desktop’ sizes, takes up a quarter of the
+// horizontal space, a half of that space at ‘tablet’ sizes, and goes full width
+// at ‘mobile’ sizes.
+//
+// If `$responsive` is ‘false’ then the grid would only be used at laptop sizes and above.
+//
+@if $grid-support {
+  @if $responsive {
+    @include grid-setup;
+
+    @each $breakpoint, $_ in $media-breakpoints {
+      @include media($from: $breakpoint) {
+        @include grid-setup("#{$breakpoint}-");
+      }
+    }
+  } @else {
+    // Not responsive
+    // Initializes widths w/o namespace
+    @include media($from: lap) {
+      @include grid-setup;
+    }
+  }
+} @else {
+  @if $responsive {
+    @include grid-setup-ie;
+
+    @each $breakpoint, $_ in $media-breakpoints {
+      @include media($from: $breakpoint) {
+        @include grid-setup-ie("#{$breakpoint}-");
+      }
+    }
+  } @else {
+    // Not responsive
+    // Initializes widths w/o namespace
+    @include media($from: lap) {
+      @include grid-setup-ie;
+    }
+  }
+}

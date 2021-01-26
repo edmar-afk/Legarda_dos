@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Spotmap</title>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css'>
+<link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.0.13/css/all.css'><link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="page-wrapper chiller-theme toggled">
+  <a id="show-sidebar" class="btn btn-sm btn-dark" href="#">
+    <i class="fas fa-bars"></i>
+  </a>
+  <nav id="sidebar" class="sidebar-wrapper">
+    <div class="sidebar-content">
+      <div class="sidebar-brand">
+        <a href="#">Brgy. Legarda Dos</a>
+        <div id="close-sidebar">
+          <i class="fas fa-times"></i>
+        </div>
+      </div>
+      <div class="sidebar-header">
+        <div class="user-pic">
+          <img class="img-responsive img-rounded" src="https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg" alt="User picture">
+        </div>
+        <div class="user-info">
+          <span class="user-name">Hon. Estrella C.
+            <strong>Asilum</strong>
+          </span>
+          <span class="user-role">Brgy. Captain</span>
+          <span class="user-status">
+
+          </span>
+        </div>
+      </div>
+      <!-- sidebar-header  -->
+
+      <!-- sidebar-search  -->
+      <div class="sidebar-menu">
+        <ul>
+          <li class="header-menu">
+            <a href="index.html">
+              
+              <span>HOME</span>
+            </a>
+          </li>
+          <li class="sidebar-dropdown">
+            <a href="#">
+              <i class="fa fa-warehouse"></i>
+              <span>Purok</span>
+            </a>
+            <div class="sidebar-submenu">
+              <ul>
+                <li>
+                  <a href="purok1.html">Purok 1<span class="badge badge-pill badge-warning">Beta</span></a>
+                </li>
+                <li>
+                 
+                  <a href="purok2.html">Purok 2<span class="badge badge-pill badge-warning">Beta</span></a>
+                </li>
+                <li>
+                  <a href="purok3.html">Purok 3<span class="badge badge-pill badge-warning">Beta</span></a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <a href="#">
+              <i class="fa fa-people-carry"></i>
+              <span>Tutorial</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="fa fa-info-circle"></i>
+              <span>Brgy. health nutrition</span>
+            </a>
+          </li>
+          
+          <li>
+            <a href="#" onclick="document.getElementById('population').style.display='block'">
+              <i class="fa fa-user-friends"></i>
+              <span>Total Population</span>
+            </a>
+          </li>
+
+          <li class="header-menu">
+            <span>Extra</span>
+          </li>
+        
+          <li>
+            <a href="#" onclick="document.getElementById('events').style.display='block'">
+              <i class="fa fa-calendar"></i>
+              <span>Events</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" onclick="document.getElementById('files').style.display='block'">
+              <i class="fa fa-folder"></i>
+              <span>Brgy. Files</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="w3-container">      
+        <div id="legend" class="w3-modal">
+          <div class="w3-modal-content">
+            <header class="w3-container w3-teal"> 
+              <span onclick="document.getElementById('legend').style.display='none'" 
+              class="w3-button w3-display-topright">&times;</span>
+              <h2>LEGENDS - Purok 2</h2>
+            </header>
+            <div class="w3-container">
+              <iframe src="legends/purok2.html" width="100%" height="300px" frameborder="0" ></iframe>
+            </div>
+            <footer class="w3-container w3-teal"><br>
+              <p>Click/tap close icon to close</p>
+            </footer>
+          </div>
+        </div>
+      </div>
+
+
+
+      
+      <div class="w3-container">      
+        <div id="events" class="w3-modal">
+          <div class="w3-modal-content">
+            <header class="w3-container w3-teal"> 
+              <span onclick="document.getElementById('events').style.display='none'" 
+              class="w3-button w3-display-topright">&times;</span>
+              <h2>Events</h2>
+            </header>
+            <div class="w3-container">
+              <iframe src="calendar/index.html" width="100%" height="300px" frameborder="0"></iframe>
+            </div>
+            <footer class="w3-container w3-teal"><br>
+              <p>Click/tap close icon to close</p>
+            </footer>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+      <div class="w3-container">      
+        <div id="population" class="w3-modal">
+          <div class="w3-modal-content">
+            <header class="w3-container w3-teal"> 
+              <span onclick="document.getElementById('population').style.display='none'" 
+              class="w3-button w3-display-topright">&times;</span>
+              <h2>Total Population</h2>
+            </header>
+            <div class="w3-container">
+              <iframe src="population/index.html" width="100%" height="500px" frameborder="0"></iframe>
+            </div>
+            <footer class="w3-container w3-teal"><br>
+              <p>Click/tap close icon to close</p>
+            </footer>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="w3-container">      
+        <div id="files" class="w3-modal">
+          <div class="w3-modal-content">
+            <header class="w3-container w3-teal"> 
+              <span onclick="document.getElementById('files').style.display='none'" 
+              class="w3-button w3-display-topright">&times;</span>
+              <h2>Brgy. Legarda Dos</h2>
+            </header>
+            <div class="w3-container">
+              <iframe src="files/index.html" width="100%" height="400px" frameborder="0"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- sidebar-menu  -->
+    </div>
+    <!-- sidebar-content  -->
+  </nav>
+  <!-- sidebar-wrapper  -->
+  <main class="page-content">
+    <div class="container">
+      <h2>Purok 2</h2>
+      <hr>
+      <div class="row">
+      </div>
+      <div class="row">
+      <iframe src="purok/purok3.html" width="100%" height="500px" frameborder="0" style="overflow:auto;"></iframe>
+      </div>
+      <hr>
+    </div>
+  </main>
+  <!-- page-content" -->
+</div>
+
+
+<!-- page-wrapper -->
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/esm/popper.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.js'></script><script  src="./script.js"></script>
+
+</body>
+</html>

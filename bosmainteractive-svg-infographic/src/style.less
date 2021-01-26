@@ -1,0 +1,29 @@
+@import "https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-127/BosmaBase.less";
+
+#InfographicContainer { position: relative; svg { max-width: 100%; } }
+
+#HowWeWorkInfographic { 
+	text { .PrimaryFont; .ExtraBold; }
+	
+	g:focus, g:hover, g.Active { .BGCircle { fill: @Green; } .BGCircleInner { stroke: @Green; } }
+	g:hover { cursor: pointer; }
+	
+	g.Active { .SecondaryGreenFill { fill: @Green; } .SecondaryGreenStroke { stroke: @Green; } }
+}
+
+#HowWeWorkInfoGraphicText { position: relative;
+	> div { padding: 40px; color: white; position: absolute;
+		&:not(.IntroText) { display: none; }
+		a { height: auto; line-height: 1.75; border-bottom: none !important; text-decoration: underline; }
+	h4 { color: white; }
+	&.Visible { }
+} }
+
+
+
+@media only screen and (max-width: 1023px) {
+	#HowWeWorkInfoGraphicText { height: 100%; position: absolute; left: 0; width: 100%; display: none; background: rgba(0,177,121,0.95);
+		&.Active { display: block; } 
+	}
+	#InfographicContainer { svg { height: auto; } /**May be bugged in IE11/10 **fix me**/ }
+}
